@@ -1,0 +1,13 @@
+# Running this with gcloud builds submit . will run on your project using 
+# the default Cloud Build service account.
+steps:
+  - id: 'terraform init'
+    name: 'hashicorp/terraform:1.0.0'
+    script: terraform init
+  - id: 'terraform plan'
+    name: 'hashicorp/terraform:1.0.0'
+    script: terraform plan
+  - id: 'terraform apply'
+    name: 'hashicorp/terraform:1.0.0'
+    script: terraform apply --auto-approve
+
