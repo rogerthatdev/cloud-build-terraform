@@ -118,3 +118,44 @@ resource "google_cloudbuild_trigger" "simple_inline_03" {
     }
   }
 }
+
+
+##########################################
+# An example using values from terraform #
+##########################################
+/*
+If there are values you want to pass to the cloud build yaml file, you can do it
+by providing values via the second parameter of the templatefile() function.
+
+The variables in the yaml file are enclosed in brackets like this: {variable}.
+See cloudbuild/04-multi-step-dynamic-with-vars.cloudbuild.yaml
+*/
+locals {
+  simple_config_04 = yamldecode(templatefile("${path.root}/cloudbuild/04-multi-step-dynamic-with-vars.cloudbuild.yaml", { "variable_here" = "WORLD", "another_variable" = "MARS" }))
+}
+
+resource "google_cloudbuild_trigger" "simple_inline_04" {
+  project     = var.project_id
+  location    = var.region
+  name        = "04-simple-inline-config-example-with-vars"
+  description = "This trigger is deployed by terraform, with an in-line build config."
+  trigger_template {
+    branch_name  = "^main$"
+    invert_regex = false
+    project_id   = var.project_id
+    repo_name    = google_sourcerepo_repository.placeholder.name
+  }
+  build {
+    images        = []
+    substitutions = {}
+    tags          = []
+    # This is the same dynamic block used in trigger 03 above
+    dynamic "step" {
+      for_each = local.simple_config_04.steps
+      content {
+        args = step.value.args
+        name = step.value.name
+      }
+    }
+  }
+}

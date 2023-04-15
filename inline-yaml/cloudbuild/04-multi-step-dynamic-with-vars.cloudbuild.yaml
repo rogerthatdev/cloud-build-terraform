@@ -1,0 +1,10 @@
+steps:
+  - name: ubuntu
+    args:
+      - echo
+      - hello ${variable_here} hey
+  - name: ubuntu
+    args:
+      - echo
+      - peace out ${another_variable}
+timeout: 600s
