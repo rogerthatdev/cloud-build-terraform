@@ -129,9 +129,9 @@ resource "google_cloudbuild_trigger" "simple_inline_03" {
   }
 }
 
-#######################################################
-# 04 - Using values from terraform  in the build yaml #
-#######################################################
+####################################################################
+# 04 - Using values from terraform for varaibles in the build yaml #
+####################################################################
 
 /*
 This example uses the dynamic block like the example above. This time the yaml 
