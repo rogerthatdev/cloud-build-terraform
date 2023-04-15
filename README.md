@@ -11,7 +11,9 @@ To run this, you'll need:
  - the [`gloud`](https://cloud.google.com/sdk/gcloud) CLI installed (or you can use [Cloud Shell](https://shell.cloud.google.com/) in your project)
 >> :warning: Docs say all the user needs is the Cloud Build Editor and Service 
 >> Usage Consumer roles, but you may receive an error about missing permissions 
->> for GCS. If that's the case, use the Editor role on the project.
+>> for GCS. If that's the case, use
+>> the Editor role on the project.
+
 ## Run it
 
 1. Set your Google Cloud project:
