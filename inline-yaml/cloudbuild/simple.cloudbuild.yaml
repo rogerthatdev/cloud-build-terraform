@@ -1,0 +1,5 @@
+steps:
+  - name: ubuntu
+    args:
+      - echo
+      - get commit sha $COMMIT_SHA

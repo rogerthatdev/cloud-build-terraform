@@ -1,16 +1,16 @@
 locals {
   repository_name   = split("/", replace(var.github_repo_url, "/(.*github.com/)/", ""))[1]
   repository_owner  = split("/", replace(var.github_repo_url, "/(.*github.com/)/", ""))[0]
-  test_build_config = yamldecode(templatefile("${path.module}/cloudbuild/test.cloudbuild.yaml", { "test" = "a test variable via tf temlatefile()" }))
-  pr_build_config   = yamldecode(templatefile("${path.module}/cloudbuild/pr.cloudbuild.yaml", {}))
+  with_vars_config  = yamldecode(templatefile("${path.root}/cloudbuild/with-variables.cloudbuild.yaml", { "variable_here" = "WORLD" }))
+  simple_config   = yamldecode(templatefile("${path.root}/cloudbuild/simple.cloudbuild.yaml", {}))
 }
 
-resource "google_cloudbuild_trigger" "inline_github" {
+resource "google_cloudbuild_trigger" "inline_github_with_vars" {
   project     = var.project_id
-  location    = var.region
-  name        = "trigger-with-inline-yaml"
+  # Make sure the location of the trigger matches the region your repository is added to.  
+  location    = "global"
+  name        = "trigger-with-inline-yaml-and-vars"
   description = "This trigger is deployed by terraform, with an in-line build config."
-
   github {
     name  = local.repository_name
     owner = local.repository_owner
@@ -20,18 +20,16 @@ resource "google_cloudbuild_trigger" "inline_github" {
       invert_regex    = false
     }
   }
-
   build {
     images        = []
     substitutions = {}
     tags          = []
     dynamic "step" {
-      for_each = local.pr_build_config.steps
+      for_each = local.with_vars_config.steps
       content {
         args = step.value.args
         name = step.value.name
       }
     }
   }
-  substitutions = {}
 }
