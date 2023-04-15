@@ -58,7 +58,7 @@ locals {
   simple_config_02 = yamldecode(templatefile("${path.root}/cloudbuild/02-simple.cloudbuild.yaml", {}))
 }
 
-resource "google_cloudbuild_trigger" "simple_inline" {
+resource "google_cloudbuild_trigger" "simple_inline_02" {
   project     = var.project_id
   location    = var.region
   name        = "02-simple-inline-config-example"
@@ -77,6 +77,44 @@ resource "google_cloudbuild_trigger" "simple_inline" {
     step {
       name = local.simple_config_02.steps[0].name
       args = local.simple_config_02.steps[0].args
+    }
+  }
+}
+
+####################
+# A third example  #
+####################
+/*
+
+
+*/
+locals {
+  simple_config_03 = yamldecode(templatefile("${path.root}/cloudbuild/03-multi-step-dynamic.cloudbuild.yaml", {}))
+}
+
+resource "google_cloudbuild_trigger" "simple_inline_03" {
+  project     = var.project_id
+  location    = var.region
+  name        = "03-simple-inline-config-example"
+  description = "This trigger is deployed by terraform, with an in-line build config."
+  trigger_template {
+    branch_name  = "^main$"
+    invert_regex = false
+    project_id   = var.project_id
+    repo_name    = google_sourcerepo_repository.placeholder.name
+  }
+  build {
+    images        = []
+    substitutions = {}
+    tags          = []
+    # This is the dynamic block that will create a step block for each step in
+    # the cloud build config file defined in the locals block above
+    dynamic "step" {
+      for_each = local.simple_config_03.steps
+      content {
+        args = step.value.args
+        name = step.value.name
+      }
     }
   }
 }

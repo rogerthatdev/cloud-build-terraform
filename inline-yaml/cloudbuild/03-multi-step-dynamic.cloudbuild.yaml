@@ -1,0 +1,10 @@
+steps:
+  - name: ubuntu
+    args:
+      - echo
+      - hello world hey
+  - name: ubuntu
+    args:
+      - echo
+      - peace out world
+timeout: 600s
