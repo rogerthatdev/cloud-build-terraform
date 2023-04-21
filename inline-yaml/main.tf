@@ -65,7 +65,7 @@ using Terraform's built-in yamldecode().
 */
 locals {
   # we bring in the yaml content via yamldecode() and templatefile()
-  simple_config_02 = yamldecode(templatefile("${path.root}/cloudbuild/02-simple.cloudbuild.yaml", {}))
+  simple_config_02 = yamldecode(templatefile("${path.root}/cloudbuild/02-simple.cloudbuild.yaml.tftpl", {}))
 }
 
 resource "google_cloudbuild_trigger" "simple_inline_02" {
@@ -101,7 +101,7 @@ This example uses a yaml file that includes 2 steps.
 */
 locals {
   # once again: we bring in the yaml content via yamldecode() and templatefile()
-  simple_config_03 = yamldecode(templatefile("${path.root}/cloudbuild/03-multi-step-dynamic.cloudbuild.yaml", {}))
+  simple_config_03 = yamldecode(templatefile("${path.root}/cloudbuild/03-multi-step-dynamic.cloudbuild.yaml.tftpl", {}))
 }
 
 resource "google_cloudbuild_trigger" "simple_inline_03" {
@@ -141,12 +141,12 @@ This example uses the dynamic block like the example above. This time the yaml
 file has some variables. 
 
 The variables in the yaml file are enclosed in brackets like this: {variable}.
-See cloudbuild/04-multi-step-dynamic-with-vars.cloudbuild.yaml
+See cloudbuild/04-multi-step-dynamic-with-vars.cloudbuild.yaml.tftpl
 */
 locals {
   # You can pass values for variables in the yaml config via the second 
   # parameter of the templatefile() function:
-  simple_config_04 = yamldecode(templatefile("${path.root}/cloudbuild/04-multi-step-dynamic-with-vars.cloudbuild.yaml", { "variable_here" = "WORLD", "another_variable" = "MARS" }))
+  simple_config_04 = yamldecode(templatefile("${path.root}/cloudbuild/04-multi-step-dynamic-with-vars.cloudbuild.yaml.tftpl", { "variable_here" = "WORLD", "another_variable" = "MARS" }))
 }
 
 resource "google_cloudbuild_trigger" "simple_inline_04" {
@@ -187,7 +187,7 @@ substitutions parameter.
 Cloud Build substitution variabes are written in ${brackets} so to escape the $ 
 varaibles in the template file will appear with $${double_dollar_signs}.
 
-See cloudbuild/05-multi-step-dynamic-with-subs.cloudbuild.yaml
+See cloudbuild/05-multi-step-dynamic-with-subs.cloudbuild.yaml.tftpl
 
 This trigger will have the following build config configured inline:
 
