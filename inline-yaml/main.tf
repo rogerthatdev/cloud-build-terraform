@@ -3,6 +3,9 @@
 resource "google_sourcerepo_repository" "placeholder" {
   project = var.project_id
   name    = "placeholder-repo"
+  depends_on = [
+    time_sleep.project_services
+  ]
 }
 #############################
 # 01 - The simplest example #
