@@ -174,3 +174,69 @@ resource "google_cloudbuild_trigger" "simple_inline_04" {
     }
   }
 }
+
+##########################################
+# 05 - Using the substitutions parameter #
+##########################################
+
+/*
+This example uses the dynamic block like the examples above. Once again the yaml 
+file has some variables but this time we're going to pass values via the 
+substitutions parameter.  
+
+Cloud Build substitution variabes are written in ${brackets} so to escape the $ 
+varaibles in the template file will appear with $${double_dollar_signs}.
+
+See cloudbuild/05-multi-step-dynamic-with-subs.cloudbuild.yaml
+
+This trigger will have the following build config configured inline:
+
+steps:
+  - name: ubuntu
+    args:
+      - echo
+      - 'hello ${variable_here} hey'
+  - name: ubuntu
+    args:
+      - echo
+      - 'peace out ${another_variable}'
+timeout: 600s
+substitutions:
+  another_variable: MARS
+  variable_here: WORLD
+
+*/
+locals {
+  # You pass no values to the templatefile function:
+  simple_config_05 = yamldecode(templatefile("${path.root}/cloudbuild/05-multi-step-dynamic-with-subs.cloudbuild.yaml.tftpl", {}))
+}
+
+resource "google_cloudbuild_trigger" "simple_inline_05" {
+  project     = var.project_id
+  location    = var.region
+  name        = "05-multi-step-dynamic-with-subs"
+  description = "This trigger is deployed by terraform, with an in-line build config."
+  trigger_template {
+    branch_name  = "^main$"
+    invert_regex = false
+    project_id   = var.project_id
+    repo_name    = google_sourcerepo_repository.placeholder.name
+  }
+  build {
+    images        = []
+    # This is where you'll supply the values for your variables
+    substitutions = {
+      variable_here = "WORLD"
+      another_variable = "MARS"
+    }
+    tags          = []
+    # This is the same dynamic block used in trigger 03 and 04 above
+    dynamic "step" {
+      for_each = local.simple_config_05.steps
+      content {
+        args = step.value.args
+        name = step.value.name
+      }
+    }
+  }
+}
